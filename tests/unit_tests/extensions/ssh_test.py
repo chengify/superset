@@ -102,12 +102,7 @@ def test_ssh_tunnel_timeout_setting() -> None:
 
 
 def test_sshtunnel_compatible_with_installed_paramiko() -> None:
-    """
-    sshtunnel unconditionally references ``paramiko.DSSKey`` when consolidating
-    auth material (``SSHTunnelForwarder.get_keys``), so every tunnel open fails
-    with ``AttributeError`` on paramiko releases that dropped DSA support. Guard
-    the paramiko/sshtunnel pin pair against that regression.
-    """
+    """``get_keys`` touches ``paramiko.DSSKey``, removed in paramiko 4.0."""
     keys = sshtunnel.SSHTunnelForwarder.get_keys(
         host_pkey_directories=[], allow_agent=False
     )

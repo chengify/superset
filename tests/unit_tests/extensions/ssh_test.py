@@ -101,6 +101,19 @@ def test_ssh_tunnel_timeout_setting() -> None:
     assert sshtunnel.SSH_TIMEOUT == 321.0
 
 
+def test_sshtunnel_compatible_with_installed_paramiko() -> None:
+    """
+    sshtunnel unconditionally references ``paramiko.DSSKey`` when consolidating
+    auth material (``SSHTunnelForwarder.get_keys``), so every tunnel open fails
+    with ``AttributeError`` on paramiko releases that dropped DSA support. Guard
+    the paramiko/sshtunnel pin pair against that regression.
+    """
+    keys = sshtunnel.SSHTunnelForwarder.get_keys(
+        host_pkey_directories=[], allow_agent=False
+    )
+    assert keys == []
+
+
 def _make_ed25519_pem() -> str:
     """Generate a fresh OpenSSH-format ed25519 private key PEM."""
     key = Ed25519PrivateKey.generate()
